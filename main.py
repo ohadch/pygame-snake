@@ -132,68 +132,71 @@ class Snake:
 
 class Game:
 
-    def __init__(self, screen_, object_padding=10):
+    def __init__(self, screen_, object_padding=10, frame_rate=50):
         self.screen = screen_
         self.snake = Snake(self)
         self.food = Food(self)
         self.object_padding = object_padding
+        self.frame_rate = frame_rate
+
+    def run(self):
+        # Loop until the user clicks the close button.
+        done = False
+        clock = pygame.time.Clock()
+
+        # Mainloop
+        while not done:
+
+            # This limits the while loop to a max of 10 times per second.
+            # Leave this out and we will use all CPU we can.
+            clock.tick(self.frame_rate)
+
+            # Update HUD
+            score_label = score_font.render("Score: {}".format(len(self.snake.positions)), 1, BLACK)
+
+            for event in pygame.event.get():  # User did something
+                if event.type == pygame.QUIT:  # If user clicked close
+                    done = True  # Flag that we are done so we exit this loop
+                elif event.type == pygame.KEYDOWN:
+                    prev_vector = self.snake.vector
+                    if event.key == pygame.K_RIGHT:
+                        self.snake.vector = RIGHT
+                    elif event.key == pygame.K_LEFT:
+                        self.snake.vector = LEFT
+                    if event.key == pygame.K_UP:
+                        self.snake.vector = UP
+                    elif event.key == pygame.K_DOWN:
+                        self.snake.vector = DOWN
+                    if prev_vector.__invert__().__dict__ == self.snake.vector.__dict__:
+                        self.snake.vector = prev_vector
+
+            if self.snake.is_colliding():
+                done = True
+
+            if self.snake.encounters(self.food, self.object_padding):
+                self.snake.eat()
+
+            # Clear the screen and set the screen background
+            self.screen.fill(WHITE)
+
+            # ===========> UPDATE POSITIONS HERE <========
+
+            self.snake.update()
+
+            # ===========> START DRAWING HERE <===========
+
+            self.snake.show()
+            self.food.show()
+            self.screen.blit(score_label, (15, HEIGHT - 25))
+
+            # ===========> END DRAWING HERE <=============
+
+            # Go ahead and update the screen with what we've drawn.
+            # This MUST happen after all the other drawing commands.
+            pygame.display.flip()
 
 
 if __name__ == '__main__':
-
-    game = Game(screen)
-
-    # Loop until the user clicks the close button.
-    done = False
-    clock = pygame.time.Clock()
-
-    # Mainloop
-    while not done:
-
-        # This limits the while loop to a max of 10 times per second.
-        # Leave this out and we will use all CPU we can.
-        clock.tick(50)
-
-        # Update HUD
-        score_label = score_font.render("Score: {}".format(len(game.snake.positions)), 1, BLACK)
-
-        for event in pygame.event.get():  # User did something
-            if event.type == pygame.QUIT:  # If user clicked close
-                done = True  # Flag that we are done so we exit this loop
-            elif event.type == pygame.KEYDOWN:
-                prev_vector = game.snake.vector
-                if event.key == pygame.K_RIGHT:
-                    game.snake.vector = RIGHT
-                elif event.key == pygame.K_LEFT:
-                    game.snake.vector = LEFT
-                if event.key == pygame.K_UP:
-                    game.snake.vector = UP
-                elif event.key == pygame.K_DOWN:
-                    game.snake.vector = DOWN
-                if prev_vector.__invert__().__dict__ == game.snake.vector.__dict__:
-                    game.snake.vector = prev_vector
-
-        if game.snake.is_colliding():
-            done = True
-
-        if game.snake.encounters(game.food, game.object_padding):
-            game.snake.eat()
-
-        # Clear the screen and set the screen background
-        screen.fill(WHITE)
-
-        # ===========> UPDATE POSITIONS HERE <========
-
-        game.snake.update()
-
-        # ===========> START DRAWING HERE <===========
-
-        game.snake.show()
-        game.food.show()
-        screen.blit(score_label, (15, HEIGHT - 25))
-
-        # ===========> END DRAWING HERE <=============
-
-        # Go ahead and update the screen with what we've drawn.
-        # This MUST happen after all the other drawing commands.
-        pygame.display.flip()
+    while True:
+        game = Game(screen)
+        game.run()
