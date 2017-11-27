@@ -21,6 +21,8 @@ pygame.init()
 screen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Ohad's Snake")
 
+# Set text fonts
+score_font = pygame.font.SysFont("monospace", 15)
 
 # ========== Functions ==============
 
@@ -56,6 +58,7 @@ class Vector:
 
     def __invert__(self):
         return Vector(-self.x, -self.y)
+
 
 VECTOR_SIZE = 5
 
@@ -107,6 +110,15 @@ class Snake:
     def is_out_of_boundaries(self):
         return self.positions[0].x == 0 or self.positions[0].x == WIDTH or self.positions[0].y == 0 or self.positions[0].y == HEIGHT
 
+    def is_self_colliding(self):
+        for position in self.positions[1:]:
+            if self.positions[0].coordinates() == position.coordinates():
+                return True
+        return False
+
+    def is_colliding(self):
+        return self.is_out_of_boundaries() or self.is_self_colliding()
+
     def show(self):
         for position in self.positions:
             pygame.draw.circle(self.game.screen, RED, position.coordinates(), 5)
@@ -142,6 +154,9 @@ if __name__ == '__main__':
         # Leave this out and we will use all CPU we can.
         clock.tick(50)
 
+        # Update HUD
+        score_label = score_font.render("Score: {}".format(len(game.snake.positions)), 1, BLACK)
+
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
@@ -158,7 +173,7 @@ if __name__ == '__main__':
                 if prev_vector.__invert__().__dict__ == game.snake.vector.__dict__:
                     game.snake.vector = prev_vector
 
-        if game.snake.is_out_of_boundaries():
+        if game.snake.is_colliding():
             done = True
 
         if game.snake.encounters(game.food, game.object_padding):
@@ -175,6 +190,7 @@ if __name__ == '__main__':
 
         game.snake.show()
         game.food.show()
+        screen.blit(score_label, (15, HEIGHT - 25))
 
         # ===========> END DRAWING HERE <=============
 
