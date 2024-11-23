@@ -1,7 +1,7 @@
 import pygame
 
-from src.core.vectors import RIGHT, LEFT, UP, DOWN
 from src.entities import SnakeEntity, FoodEntity
+from src.enums import Direction
 from src.settings import score_font, BLACK, WHITE, HEIGHT
 
 
@@ -27,7 +27,7 @@ class Game:
             clock.tick(self.frame_rate)
 
             # Update HUD
-            score_label = score_font.render("Score: {}".format(len(self.snake.positions)), 1, BLACK)
+            score_label = score_font.render("Score: {}".format(len(self.snake._positions)), 1, BLACK)
 
             for event in pygame.event.get():  # User did something
                 if event.type == pygame.QUIT:  # If user clicked close
@@ -35,13 +35,13 @@ class Game:
                 elif event.type == pygame.KEYDOWN:
                     prev_vector = self.snake.vector
                     if event.key == pygame.K_RIGHT:
-                        self.snake.vector = RIGHT
+                        self.snake.update_vector(direction=Direction.RIGHT)
                     elif event.key == pygame.K_LEFT:
-                        self.snake.vector = LEFT
+                        self.snake.update_vector(direction=Direction.LEFT)
                     if event.key == pygame.K_UP:
-                        self.snake.vector = UP
+                        self.snake.update_vector(direction=Direction.UP)
                     elif event.key == pygame.K_DOWN:
-                        self.snake.vector = DOWN
+                        self.snake.update_vector(direction=Direction.DOWN)
                     if prev_vector.__invert__().__dict__ == self.snake.vector.__dict__:
                         self.snake.vector = prev_vector
 
@@ -49,6 +49,7 @@ class Game:
                 done = True
 
             if self.snake.encounters(self.food, self.object_padding):
+                self.snake.speed = self.snake.speed * 1.3
                 self.snake.eat()
 
             # Clear the screen and set the screen background

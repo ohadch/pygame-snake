@@ -1,2 +1,2 @@
-from .snakeentity import SnakeEntity
-from .foodentity import FoodEntity
+from .snake import SnakeEntity
+from .food import FoodEntity

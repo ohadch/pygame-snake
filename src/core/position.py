@@ -8,7 +8,7 @@ class Position:
         return self.x, self.y
 
     def is_clear(self, game_):
-        for pos in game_.snake.positions:
+        for pos in game_.snake._positions:
             if pos.coordinates == self.coordinates():
                 return False
         return True
