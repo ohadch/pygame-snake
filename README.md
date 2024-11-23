@@ -1,6 +1,6 @@
 # Pygame Snake Game
 
-![img.png](assets/showcase.png)
+![Screen Recording 2024-11-23 at 6 51 34](https://github.com/user-attachments/assets/9acb3308-2873-4fbc-9128-44e2d805ea4c)
 
 This repository contains the source code for a simple snake game implemented using Pygame. The game includes basic features such as movement controls, collision detection with walls and self-collision, and randomly placed food that the snake can eat to grow.
 
